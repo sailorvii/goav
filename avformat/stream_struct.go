@@ -25,9 +25,11 @@ func (avs *Stream) Metadata() *avutil.Dictionary {
 	return (*avutil.Dictionary)(unsafe.Pointer(avs.metadata))
 }
 
+/*
 func (avs *Stream) IndexEntries() *AvIndexEntry {
 	return (*AvIndexEntry)(unsafe.Pointer(avs.index_entries))
 }
+*/
 
 func (avs *Stream) AttachedPic() avcodec.Packet {
 	return *fromCPacket(&avs.attached_pic)
@@ -37,9 +39,11 @@ func (avs *Stream) SideData() *AvPacketSideData {
 	return (*AvPacketSideData)(unsafe.Pointer(avs.side_data))
 }
 
+/*
 func (avs *Stream) ProbeData() AvProbeData {
 	return AvProbeData(avs.probe_data)
 }
+*/
 
 func (avs *Stream) AvgFrameRate() avcodec.Rational {
 	return newRational(avs.avg_frame_rate)
@@ -59,6 +63,10 @@ func (avs *Stream) SampleAspectRatio() avcodec.Rational {
 
 func (avs *Stream) TimeBase() avcodec.Rational {
 	return newRational(avs.time_base)
+}
+
+func (avs *Stream) SetTimeBase(rational avcodec.Rational) {
+	avs.time_base = *(*C.struct_AVRational)(unsafe.Pointer(&rational))
 }
 
 // func (avs *Stream) RecommendedEncoderConfiguration() string {
@@ -93,14 +101,17 @@ func (avs *Stream) Index() int {
 	return int(avs.index)
 }
 
+/*
 func (avs *Stream) InjectGlobalSideData() int {
 	return int(avs.inject_global_side_data)
 }
+*/
 
 func (avs *Stream) LastIpDuration() int {
 	return int(avs.last_IP_duration)
 }
 
+/*
 func (avs *Stream) NbDecodedFrames() int {
 	return int(avs.nb_decoded_frames)
 }
@@ -108,6 +119,7 @@ func (avs *Stream) NbDecodedFrames() int {
 func (avs *Stream) NbIndexEntries() int {
 	return int(avs.nb_index_entries)
 }
+*/
 
 func (avs *Stream) NbSideData() int {
 	return int(avs.nb_side_data)
@@ -117,6 +129,7 @@ func (avs *Stream) ProbePackets() int {
 	return int(avs.probe_packets)
 }
 
+/*
 func (avs *Stream) PtsWrapBehavior() int {
 	return int(avs.pts_wrap_behavior)
 }
@@ -132,14 +145,17 @@ func (avs *Stream) SkipSamples() int {
 func (avs *Stream) SkipToKeyframe() int {
 	return int(avs.skip_to_keyframe)
 }
+*/
 
 func (avs *Stream) StreamIdentifier() int {
 	return int(avs.stream_identifier)
 }
 
+/*
 func (avs *Stream) UpdateInitialDurationsDone() int {
 	return int(avs.update_initial_durations_done)
 }
+*/
 
 func (avs *Stream) CurDts() int64 {
 	return int64(avs.cur_dts)
@@ -157,6 +173,7 @@ func (avs *Stream) FirstDts() int64 {
 	return int64(avs.first_dts)
 }
 
+/*
 func (avs *Stream) InterleaverChunkDuration() int64 {
 	return int64(avs.interleaver_chunk_duration)
 }
@@ -232,7 +249,7 @@ func (avs *Stream) PtsReorderErrorCount() uint8 {
 func (avs *Stream) IndexEntriesAllocatedSize() uint {
 	return uint(avs.index_entries_allocated_size)
 }
-
+*/
 func (avs *Stream) Free() {
 	C.av_freep(unsafe.Pointer(avs))
 }

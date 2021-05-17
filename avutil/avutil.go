@@ -9,6 +9,7 @@ package avutil
 
 //#cgo pkg-config: libavutil
 //#include <libavutil/avutil.h>
+//#include <libavutil/opt.h>
 //#include <stdlib.h>
 import "C"
 import (
@@ -23,6 +24,11 @@ type (
 	AvPictureType C.enum_AVPictureType
 	PixelFormat   C.enum_AVPixelFormat
 	File          C.FILE
+
+)
+
+const (
+	AV_PICTURE_TYPE_NONE  = AvPictureType(C.AV_PICTURE_TYPE_NONE)
 )
 
 //Return the LIBAvUTIL_VERSION_INT constant.
@@ -69,4 +75,8 @@ func AvFopenUtf8(p, m string) *File {
 //Return the fractional representation of the internal time base.
 func AvGetTimeBaseQ() Rational {
 	return (Rational)(C.av_get_time_base_q())
+}
+
+func AvOptSet(object unsafe.Pointer,name string,value string,searchFlags int)int{
+	return int(C.av_opt_set(object,(C.CString)(name),(C.CString)(value),(C.int)(searchFlags)))
 }
