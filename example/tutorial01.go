@@ -65,9 +65,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	avformat.AvDictSet(&avformat.Dict, "rtsp_transport", "tcp", 0)
+	iavformat.AvDictSet(&avformat.Dict, "max_delay", "5000000", 0)
 	// Open video file
 	pFormatContext := avformat.AvformatAllocContext()
-	if avformat.AvformatOpenInput(&pFormatContext, os.Args[1], nil, nil) != 0 {
+	if avformat.AvformatOpenInput(&pFormatContext, os.Args[1], nil, &avformat.Dict) != 0 {
 		fmt.Printf("Unable to open file %s\n", os.Args[1])
 		os.Exit(1)
 	}

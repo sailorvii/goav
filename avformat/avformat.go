@@ -136,7 +136,7 @@ func (s *Stream) AvStreamGetSideData(t AvPacketSideDataType, z int) *uint8 {
 //Allocate an Context for an output format.
 func AvAllocOutputContext2(ctx **Context, o *OutputFormat, format, filename *string) int {
 	var CFormatName *C.char
-	if format != nil{
+	if format != nil {
 		CFormatName = C.CString(*format)
 	}
 	defer C.free(unsafe.Pointer(CFormatName))
@@ -186,12 +186,29 @@ func AvProbeInputBuffer(pb *AvIOContext, f **InputFormat, fi string, l int, o, m
 	return int(C.av_probe_input_buffer((*C.struct_AVIOContext)(pb), (**C.struct_AVInputFormat)(unsafe.Pointer(f)), Curl, unsafe.Pointer(&l), C.uint(o), C.uint(m)))
 }
 
+var Dict *C.struct_AVDictionary
+
+func AvDictSet(d **C.struct_AVDictionary, key string, value string, flags int) int {
+	Ckey := C.CString(key)
+	defer C.free(unsafe.Pointer(Ckey))
+
+	Cvalue := C.CString(value)
+	defer C.free(unsafe.Pointer(Cvalue))
+
+	return int(C.av_dict_set(
+		d,
+		Ckey,
+		Cvalue,
+		C.int(flags),
+	))
+}
+
 //Open an input stream and read the header.
-func AvformatOpenInput(ps **Context, fi string, fmt *InputFormat, d **avutil.Dictionary) int {
+func AvformatOpenInput(ps **Context, fi string, fmt *InputFormat, d **C.struct_AVDictionary) int {
 	Cfi := C.CString(fi)
 	defer C.free(unsafe.Pointer(Cfi))
 
-	return int(C.avformat_open_input((**C.struct_AVFormatContext)(unsafe.Pointer(ps)), Cfi, (*C.struct_AVInputFormat)(fmt), (**C.struct_AVDictionary)(unsafe.Pointer(d))))
+	return int(C.avformat_open_input((**C.struct_AVFormatContext)(unsafe.Pointer(ps)), Cfi, (*C.struct_AVInputFormat)(fmt), d))
 }
 
 //Return the output format in the list of registered output formats which best matches the provided parameters, or return NULL if there is no match.
