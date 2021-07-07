@@ -11,8 +11,8 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/giorgisio/goav/avcodec"
-	"github.com/giorgisio/goav/avutil"
+	"github.com/sailorvii/goav/avcodec"
+	"github.com/sailorvii/goav/avutil"
 )
 
 func (ctxt *Context) Chapters() **AvChapter {
