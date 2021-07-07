@@ -2,7 +2,20 @@
 // Giorgis (habtom@giorgis.io)
 
 package avcodec
+
+//#cgo pkg-config: libavformat libavcodec libavutil libavdevice libavfilter libswresample libswscale
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <inttypes.h>
+//#include <stdint.h>
+//#include <string.h>
+//#include <libavformat/avformat.h>
+//#include <libavcodec/avcodec.h>
 import "C"
+import (
+	"reflect"
+	"unsafe"
+)
 
 func (ctxt *Context) ActiveThreadType() int {
 	return int(ctxt.active_thread_type)
@@ -120,8 +133,29 @@ func (ctxt *Context) ExtradataSize() int {
 	return int(ctxt.extradata_size)
 }
 
+func (ctxt *Context) GetExtraData() []byte {
+	header := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(ctxt.extradata)),
+		Len:  int(ctxt.extradata_size),
+		Cap:  int(ctxt.extradata_size),
+	}
+
+	return *((*[]byte)(unsafe.Pointer(&header)))
+}
+
+func (ctxt *Context) SetExtraData(data []byte) {
+	header := (*reflect.SliceHeader)(unsafe.Pointer(&data))
+
+	ctxt.extradata = (*C.uint8_t)(unsafe.Pointer(header.Data))
+	ctxt.extradata_size = C.int(header.Len)
+}
+
 func (ctxt *Context) Flags() int {
 	return int(ctxt.flags)
+}
+
+func (ctxt *Context) SetFlags(flags int) {
+	ctxt.flags = C.int(flags)
 }
 
 func (ctxt *Context) Flags2() int {
@@ -176,7 +210,7 @@ func (ctxt *Context) Height() int {
 	return int(ctxt.height)
 }
 
-func (ctxt *Context) SetHeight(height int){
+func (ctxt *Context) SetHeight(height int) {
 	ctxt.height = (C.int)(height)
 }
 
@@ -244,6 +278,10 @@ func (ctxt *Context) MaxQdiff() int {
 	return int(ctxt.max_qdiff)
 }
 
+func (ctxt *Context) SetMaxQDiff(v int) {
+	ctxt.max_qdiff = C.int(v)
+}
+
 func (ctxt *Context) MbCmp() int {
 	return int(ctxt.mb_cmp)
 }
@@ -274,6 +312,10 @@ func (ctxt *Context) MePreCmp() int {
 
 func (ctxt *Context) MeRange() int {
 	return int(ctxt.me_range)
+}
+
+func (ctxt *Context) SetMeRange(r int) {
+	ctxt.me_range = C.int(r)
 }
 
 func (ctxt *Context) MeSubCmp() int {
@@ -348,12 +390,24 @@ func (ctxt *Context) Qcompress() float64 {
 	return float64(ctxt.qcompress)
 }
 
+func (ctxt *Context) SetQCompress(v float32) {
+	ctxt.qcompress = C.float(v)
+}
+
 func (ctxt *Context) Qmax() int {
 	return int(ctxt.qmax)
 }
 
+func (ctxt *Context) SetQMax(v int) {
+	ctxt.qmax = C.int(v)
+}
+
 func (ctxt *Context) Qmin() int {
 	return int(ctxt.qmin)
+}
+
+func (ctxt *Context) SetQMin(v int) {
+	ctxt.qmin = C.int(v)
 }
 
 func (ctxt *Context) RcBufferSize() int {
@@ -483,17 +537,17 @@ func (ctxt *Context) Trellis() int {
 func (ctxt *Context) Width() int {
 	return int(ctxt.width)
 }
+
 func (ctxt *Context) SetWidth(w int) {
 	ctxt.width = C.int(w)
 }
 
-func (ctxt *Context) SampleAspectRatio() Rational{
+func (ctxt *Context) SampleAspectRatio() Rational {
 	return Rational(ctxt.sample_aspect_ratio)
 }
 func (ctxt *Context) SetSampleAspectRatio(s Rational) {
 	ctxt.sample_aspect_ratio = C.struct_AVRational(s)
 }
-
 
 func (ctxt *Context) WorkaroundBugs() int {
 	return int(ctxt.workaround_bugs)
@@ -515,8 +569,25 @@ func (ctxt *Context) CodecId() CodecId {
 	return (CodecId)(ctxt.codec_id)
 }
 
+func (ctxt *Context) SetCodecId(codecId CodecId) {
+	ctxt.codec_id = C.enum_AVCodecID(codecId)
+}
+
 func (ctxt *Context) CodecType() MediaType {
 	return (MediaType)(ctxt.codec_type)
+}
+
+func (ctxt *Context) SetCodecType(ctype MediaType) {
+	ctxt.codec_type = C.enum_AVMediaType(ctype)
+}
+
+func (ctxt *Context) TimeBase() Rational {
+	return NewRational(int(ctxt.time_base.num), int(ctxt.time_base.den))
+}
+
+func (ctxt *Context) SetTimeBase(num1 int, den1 int) {
+	ctxt.time_base.num = C.int(num1)
+	ctxt.time_base.den = C.int(den1)
 }
 
 func (ctxt *Context) ColorPrimaries() AvColorPrimaries {
@@ -541,6 +612,10 @@ func (ctxt *Context) FieldOrder() AvFieldOrder {
 
 func (ctxt *Context) PixFmt() PixelFormat {
 	return (PixelFormat)(ctxt.pix_fmt)
+}
+
+func (ctxt *Context) SetPixelFormat(fmt PixelFormat) {
+	ctxt.pix_fmt = C.enum_AVPixelFormat(C.int(fmt))
 }
 
 func (ctxt *Context) RequestSampleFmt() AvSampleFormat {

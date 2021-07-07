@@ -7,10 +7,12 @@ package avformat
 //#include <libavformat/avformat.h>
 import "C"
 import (
+	"fmt"
 	"reflect"
 	"unsafe"
 
-	"github.com/sailorvii/goav/avutil"
+	"github.com/giorgisio/goav/avcodec"
+	"github.com/giorgisio/goav/avutil"
 )
 
 func (ctxt *Context) Chapters() **AvChapter {
@@ -77,16 +79,17 @@ func (ctxt *Context) Filename() string {
 // 	return C.GoString(ctxt.format_whitelist)
 // }
 
-func (ctxt *Context) AudioCodecId() CodecId {
-	return CodecId(ctxt.audio_codec_id)
+func (ctxt *Context) AudioCodecId() avcodec.CodecId {
+	return avcodec.CodecId(ctxt.audio_codec_id)
 }
 
-func (ctxt *Context) SubtitleCodecId() CodecId {
-	return CodecId(ctxt.subtitle_codec_id)
+func (ctxt *Context) SubtitleCodecId() avcodec.CodecId {
+	return avcodec.CodecId(ctxt.subtitle_codec_id)
 }
 
-func (ctxt *Context) VideoCodecId() CodecId {
-	return CodecId(ctxt.video_codec_id)
+func (ctxt *Context) VideoCodecId() avcodec.CodecId {
+	fmt.Println("@@@@@@", ctxt.video_codec_id)
+	return avcodec.CodecId(ctxt.video_codec_id)
 }
 
 func (ctxt *Context) DurationEstimationMethod() AvDurationEstimationMethod {
@@ -229,6 +232,10 @@ func (ctxt *Context) Oformat() *OutputFormat {
 	return (*OutputFormat)(unsafe.Pointer(ctxt.oformat))
 }
 
+func (ctxt *Context) SetOformat(outputFormat *OutputFormat) {
+	ctxt.oformat = (*C.struct_AVOutputFormat)(unsafe.Pointer(outputFormat))
+}
+
 // func (ctxt *Context) DumpSeparator() uint8 {
 // 	return uint8(ctxt.dump_separator)
 // }
@@ -239,6 +246,10 @@ func (outputFmt *OutputFormat) GetFlags() int {
 
 func (outputFmt *OutputFormat) SetFlags(flag int) {
 	outputFmt.flags = C.int(flag)
+}
+
+func (outputFmt *OutputFormat) GetVideoCodec() avcodec.CodecId {
+	return avcodec.CodecId(outputFmt.video_codec)
 }
 
 func (ctxt *Context) CorrectTsOverflow() int {
@@ -280,4 +291,3 @@ func (ctxt *Context) SetPb(pb *AvIOContext) {
 func (ctxt *Context) Pb2() **AvIOContext {
 	return (**AvIOContext)(unsafe.Pointer(&ctxt.pb))
 }
-

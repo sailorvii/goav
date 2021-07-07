@@ -9,16 +9,16 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/sailorvii/goav/avcodec"
-	"github.com/sailorvii/goav/avutil"
+	"github.com/giorgisio/goav/avcodec"
+	"github.com/giorgisio/goav/avutil"
 )
 
 func (avs *Stream) CodecParameters() *avcodec.AvCodecParameters {
 	return (*avcodec.AvCodecParameters)(unsafe.Pointer(avs.codecpar))
 }
 
-func (avs *Stream) Codec() *CodecContext {
-	return (*CodecContext)(unsafe.Pointer(avs.codec))
+func (avs *Stream) Codec() *avcodec.Context {
+	return (*avcodec.Context)(unsafe.Pointer(avs.codec))
 }
 
 func (avs *Stream) Metadata() *avutil.Dictionary {

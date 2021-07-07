@@ -17,6 +17,8 @@ package avcodec
 import "C"
 import (
 	"unsafe"
+
+	"github.com/giorgisio/goav/avutil"
 )
 
 type (
@@ -26,12 +28,11 @@ type (
 	Parser                        C.struct_AVCodecParser
 	ParserContext                 C.struct_AVCodecParserContext
 	Dictionary                    C.struct_AVDictionary
-	Frame                         C.struct_AVFrame
 	MediaType                     C.enum_AVMediaType
 	Packet                        C.struct_AVPacket
 	BitStreamFilter               C.struct_AVBitStreamFilter
 	BitStreamFilterContext        C.struct_AVBitStreamFilterContext
-	BSFContext					  C.struct_AVBSFContext
+	BSFContext                    C.struct_AVBSFContext
 	Rational                      C.struct_AVRational
 	Class                         C.struct_AVClass
 	AvCodecParameters             C.struct_AVCodecParameters
@@ -255,8 +256,8 @@ func AvcodecString(b string, bs int, ctxt *Context, e int) {
 }
 
 //Fill Frame audio data and linesize pointers.
-func AvcodecFillAudioFrame(f *Frame, c int, s AvSampleFormat, b *uint8, bs, a int) int {
-	return int(C.avcodec_fill_audio_frame((*C.struct_AVFrame)(f), C.int(c), (C.enum_AVSampleFormat)(s), (*C.uint8_t)(b), C.int(bs), C.int(a)))
+func AvcodecFillAudioFrame(f *avutil.Frame, c int, s AvSampleFormat, b *uint8, bs, a int) int {
+	return int(C.avcodec_fill_audio_frame((*C.struct_AVFrame)(unsafe.Pointer(f)), C.int(c), (C.enum_AVSampleFormat)(s), (*C.uint8_t)(b), C.int(bs), C.int(a)))
 }
 
 //Return codec bits per sample.

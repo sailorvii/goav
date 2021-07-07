@@ -8,6 +8,8 @@ package avcodec
 import "C"
 import (
 	"unsafe"
+
+	"github.com/giorgisio/goav/avutil"
 )
 
 func (ctxt *Context) AvCodecGetPktTimebase() Rational {
@@ -96,8 +98,8 @@ func (ctxt *Context) AvcodecClose() int {
 }
 
 //The default callback for Context.get_buffer2().
-func (s *Context) AvcodecDefaultGetBuffer2(f *Frame, l int) int {
-	return int(C.avcodec_default_get_buffer2((*C.struct_AVCodecContext)(s), (*C.struct_AVFrame)(f), C.int(l)))
+func (s *Context) AvcodecDefaultGetBuffer2(f *avutil.Frame, l int) int {
+	return int(C.avcodec_default_get_buffer2((*C.struct_AVCodecContext)(s), (*C.struct_AVFrame)(unsafe.Pointer(f)), C.int(l)))
 }
 
 //Modify width and height values so that they will result in a memory buffer that is acceptable for the codec if you do not use any horizontal padding.
@@ -111,13 +113,13 @@ func (ctxt *Context) AvcodecAlignDimensions2(w, h *int, l int) {
 }
 
 //Decode the audio frame of size avpkt->size from avpkt->data into frame.
-func (ctxt *Context) AvcodecDecodeAudio4(f *Frame, g *int, a *Packet) int {
-	return int(C.avcodec_decode_audio4((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(f), (*C.int)(unsafe.Pointer(g)), (*C.struct_AVPacket)(a)))
+func (ctxt *Context) AvcodecDecodeAudio4(f *avutil.Frame, g *int, a *Packet) int {
+	return int(C.avcodec_decode_audio4((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(unsafe.Pointer(f)), (*C.int)(unsafe.Pointer(g)), (*C.struct_AVPacket)(a)))
 }
 
 //Decode the video frame of size avpkt->size from avpkt->data into picture.
-func (ctxt *Context) AvcodecDecodeVideo2(p *Frame, g *int, a *Packet) int {
-	return int(C.avcodec_decode_video2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(p), (*C.int)(unsafe.Pointer(g)), (*C.struct_AVPacket)(a)))
+func (ctxt *Context) AvcodecDecodeVideo2(p *avutil.Frame, g *int, a *Packet) int {
+	return int(C.avcodec_decode_video2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(unsafe.Pointer(p)), (*C.int)(unsafe.Pointer(g)), (*C.struct_AVPacket)(a)))
 }
 
 //Decode a subtitle message.
@@ -126,13 +128,13 @@ func (ctxt *Context) AvcodecDecodeSubtitle2(s *AvSubtitle, g *int, a *Packet) in
 }
 
 //Encode a frame of audio.
-func (ctxt *Context) AvcodecEncodeAudio2(p *Packet, f *Frame, gp *int) int {
-	return int(C.avcodec_encode_audio2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(p), (*C.struct_AVFrame)(f), (*C.int)(unsafe.Pointer(gp))))
+func (ctxt *Context) AvcodecEncodeAudio2(p *Packet, f *avutil.Frame, gp *int) int {
+	return int(C.avcodec_encode_audio2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(p), (*C.struct_AVFrame)(unsafe.Pointer(f)), (*C.int)(unsafe.Pointer(gp))))
 }
 
 //Encode a frame of video
-func (ctxt *Context) AvcodecEncodeVideo2(p *Packet, f *Frame, gp *int) int {
-	return int(C.avcodec_encode_video2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(p), (*C.struct_AVFrame)(f), (*C.int)(unsafe.Pointer(gp))))
+func (ctxt *Context) AvcodecEncodeVideo2(p *Packet, f *avutil.Frame, gp *int) int {
+	return int(C.avcodec_encode_video2((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(p), (*C.struct_AVFrame)(unsafe.Pointer(f)), (*C.int)(unsafe.Pointer(gp))))
 }
 
 func (ctxt *Context) AvcodecEncodeSubtitle(b *uint8, bs int, s *AvSubtitle) int {
@@ -182,11 +184,6 @@ func (p *Parser) AvRegisterCodecParser() {
 	C.av_register_codec_parser((*C.struct_AVCodecParser)(p))
 }
 
-func (ctxt *Context) SetTimebase(num1 int, den1 int) {
-	ctxt.time_base.num = C.int(num1)
-	ctxt.time_base.den = C.int(den1)
-}
-
 func (ctxt *Context) SetEncodeParams2(width int, height int, pxlFmt PixelFormat, hasBframes bool, gopSize int) {
 	ctxt.width = C.int(width)
 	ctxt.height = C.int(height)
@@ -217,12 +214,12 @@ func (ctxt *Context) AvcodecReceivePacket(packet *Packet) int {
 	return (int)(C.avcodec_receive_packet((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(packet)))
 }
 
-func (ctxt *Context) AvcodecReceiveFrame(frame *Frame) int {
-	return (int)(C.avcodec_receive_frame((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(frame)))
+func (ctxt *Context) AvcodecReceiveFrame(frame *avutil.Frame) int {
+	return (int)(C.avcodec_receive_frame((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(unsafe.Pointer(frame))))
 }
 
-func (ctxt *Context) AvcodecSendFrame(frame *Frame) int {
-	return (int)(C.avcodec_send_frame((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(frame)))
+func (ctxt *Context) AvcodecSendFrame(frame *avutil.Frame) int {
+	return (int)(C.avcodec_send_frame((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVFrame)(unsafe.Pointer(frame))))
 }
 
 func (ctxt *Context) GetBitRate() int64 {

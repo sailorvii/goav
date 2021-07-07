@@ -7,7 +7,7 @@ package avformat
 //#include <libavformat/avformat.h>
 import "C"
 import (
-	"github.com/sailorvii/goav/avcodec"
+	"github.com/giorgisio/goav/avcodec"
 )
 
 //Rational av_stream_get_r_frame_rate (const Stream *s)
@@ -26,9 +26,9 @@ func (s *Stream) AvStreamSetRFrameRate(r avcodec.Rational) {
 }
 
 //struct CodecParserContext * av_stream_get_parser (const Stream *s)
-func (s *Stream) AvStreamGetParser() *CodecParserContext {
-	return (*CodecParserContext)(C.av_stream_get_parser((*C.struct_AVStream)(s)))
-}
+// func (s *Stream) AvStreamGetParser() *avcodec.ParserContext{
+//	return (*avcodec.ParserContext)(C.av_stream_get_parser((*C.struct_AVStream)(s)))
+//}
 
 // //char * av_stream_get_recommended_encoder_configuration (const Stream *s)
 // func (s *Stream) AvStreamGetRecommendedEncoderConfiguration() string {
